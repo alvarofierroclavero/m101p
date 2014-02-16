@@ -7,13 +7,12 @@ def show_collections(db_name):
 	try:
 		# Setup connection to the local mongod server
 		connection = pymongo.MongoClient("mongodb://localhost")
-		
+
 		# Setup error controls.
 		error_val = 0
 		error_message = ""
 
 		# Attempt to attach a Mongo connection to the requested database.
-
 		db = connection[db_name]
 
 		# Attempt to retrieve a listing of all the collections in the preferred database.
