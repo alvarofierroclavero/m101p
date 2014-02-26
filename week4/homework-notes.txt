@@ -1,0 +1,13 @@
+Homework notes
+------------------------------
+1,000 posts in db.posts collection
+4 different post titles with each of the 4 duplicated a number of times to equal the 1,000 posts
+Example:
+> db.posts.find({'title':'Gettysburg Address'}).count()
+243
+> db.posts.find({'title':'US Constitution'}).count()
+279
+> db.posts.find({'title':'Bill of Rights'}).count()
+255
+> db.posts.find({'title':'Declaration of Independence'}).count()
+223
