@@ -11,3 +11,16 @@ Example:
 255
 > db.posts.find({'title':'Declaration of Independence'}).count()
 223
+
+Answer to 4.3 was to create the following indexes to make parts of the blog faster:
+# Index for the blog homepage:
+db.posts.ensureIndex({date:-1})
+# Querying for a specific post by permalink:
+db.posts.ensureIndex({permalink:1})
+# Showing all posts for a specific tag:
+db.posts.ensureIndex({tags:1, date:-1})
+
+Answer to 4.4 involved loading profile data and then finding the longest running
+operation on the students collection of the school2 database. The answer was the
+milliseconds of the longest running operation:
+db.profile.find({ns:/school2.students/}).sort({millis:-1}).limit(1).pretty()
