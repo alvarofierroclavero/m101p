@@ -1,2 +1,54 @@
 Homework notes for Week 5
 ------------------------------
+Random code I wrote down this week:
+db.zips.aggregate([{$project:{"_id":0,"city":{$toLower:"$city"},pop:1, state:1,"zip":{"$_id"}}}])
+db.zips.aggregate([{$project:{"_id":0, city:{$toLower:"$city"}, pop:1, state:1, zip:"$_id"}}])
+db.zips.aggregate([{$match:{pop:{$gt:100000}}}])
+db.zips.aggregate([{$sort:{state:1,city:1}}])
+
+HW 5.1
+{
+	id,
+	body,
+	permalink,
+	author,
+	title,
+	tags: ["one", "two", "three"],
+	comments: [{"body":"body 1", "email":"email 1", "author":"author 1"}, {"body":"body 2", "email":"email 2", "author":"author 2"}],
+	date
+}
+
+Answer to 5.1 involved finding the author with the most comments in the blog database:
+db.posts.aggregate([{"$unwind":"$comments"}, {$group:{"_id":"$comments.author", "count":{$sum:1}}}, {$sort:{count:1}}])
+
+HW 5.2 (see hw5.2.js for the complete solution)
+> db.zips.findOne()
+{
+	"city" : "ACMAR",
+	"loc" : [
+		-86.51557,
+		33.584132
+	],
+	"pop" : 6055,
+	"state" : "AL",
+	"_id" : "35004"
+}
+
+Answer to 5.2 involved calculating the average population of cities in California (abbreviation CA) and New York (NY) (taken together) with populations over 25,000.
+
+db.zips.aggregate([{$match:{$or:[{state:'CA'},{state:'NY'}]}},{$group:{_id:{city:'$city',state:'$state'},population:{$sum:'$pop'}}},{$match:{population:{$gt:25000}}},{$group:{_id:null,avg:{$avg:'$population'}}}])
+
+HW 5.3 (see hw5.3.js for the complete solution)
+Answer to 5.3 involved calculating the class with the best average student performance. There are different score types such
+as exam, homework, and quiz, but only exams and homework grades count. So you first need to find filter ($match) on the
+different different score types (after unwinding the scores array of course). Then, you find the average score for each
+student in each class, then average the class score and sort by 1 or -1 to see the best or least performing class.
+
+db.grades.aggregate([{$unwind:'$scores'},{$match:{$or:[{"scores.type":'exam'},{"scores.type":'homework'}]}},{$group:{_id:{student_id:"$student_id",class_id:"$class_id"},average_student:{$avg:'$scores.score'}}},{$group:{_id:"$_id.class_id",average_class:{$avg:'$average_student'}}},{$sort:{average_class:1}},{$limit:1}])
+
+HW 5.4 (see hw5.4.js for the complete solution)
+Answer to 5.4 involved the zip codes collection (29,467 records). The question asked to calculate the sum population of
+cities where the city name had a digit (0-9) as the first character. Through some simple substring + regex operations
+you can easily match the targeted city names then sum up the population of those cities.
+
+db.zips.aggregate([{$project:{first_char:{$substr:['$city',0,1]},population:'$pop',city:'$city'}},{$match:{first_char:{'$regex':'[0-9]'}}},{$group:{_id:null,total_population:{'$sum':'$population'}}}])

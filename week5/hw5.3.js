@@ -1,3 +1,4 @@
+/*
 Sample data:
 {
     "_id" : ObjectId("50b59cd75bed76f46522c34e"),
@@ -26,7 +27,8 @@ Sample data:
         }
     ]
 }
-
+*/
+use m101
 db.grades.aggregate([
     {$unwind:
         '$scores'
