@@ -124,6 +124,28 @@ def post_new_comment():
 
         bottle.redirect("/post/" + permalink)
 
+# used to process a like on a blog post
+@bottle.post('/like')
+def post_comment_like():
+    permalink = bottle.request.forms.get("permalink")
+    permalink = cgi.escape(permalink)
+
+    comment_ordinal_str = bottle.request.forms.get("comment_ordinal")
+
+    comment_ordinal = int(comment_ordinal_str)
+
+    post = posts.get_post_by_permalink(permalink)
+    if post is None:
+        bottle.redirect("/post_not_found")
+        return
+
+    # it all looks good. increment the ordinal
+    posts.increment_likes(permalink, comment_ordinal)
+
+    bottle.redirect("/post/" + permalink)
+
+
+
 @bottle.get("/post_not_found")
 def post_not_found():
     return "Sorry, post not found"
